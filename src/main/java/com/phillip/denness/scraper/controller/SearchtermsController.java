@@ -1,12 +1,11 @@
-package com.phillip.denness.gumtree.controller;
+package com.phillip.denness.scraper.controller;
 
-import com.phillip.denness.gumtree.Service.SearchtermsService;
-import com.phillip.denness.gumtree.controller.response.SearchTermsResponse;
-import com.phillip.denness.gumtree.domain.Scrape;
-import com.phillip.denness.gumtree.domain.Searchterms;
-import com.phillip.denness.gumtree.webcrawler.BasicWebCrawler;
+import com.phillip.denness.scraper.Service.SearchtermsService;
+import com.phillip.denness.scraper.controller.response.SearchTermsResponse;
+import com.phillip.denness.scraper.domain.Scrape;
+import com.phillip.denness.scraper.domain.Searchterms;
+import com.phillip.denness.scraper.webcrawler.BasicWebCrawler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

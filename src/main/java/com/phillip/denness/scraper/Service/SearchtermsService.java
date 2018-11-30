@@ -1,7 +1,7 @@
-package com.phillip.denness.gumtree.Service;
+package com.phillip.denness.scraper.Service;
 
-import com.phillip.denness.gumtree.domain.Searchterms;
-import com.phillip.denness.gumtree.repository.SearchtermsRepository;
+import com.phillip.denness.scraper.domain.Searchterms;
+import com.phillip.denness.scraper.repository.SearchtermsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

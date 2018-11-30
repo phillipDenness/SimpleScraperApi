@@ -34,7 +34,7 @@ task migratePostgresDatabase(type: JavaExec) {
     classpath configurations.liquibase
     main = "liquibase.integration.commandline.Main"
 
-    def urlString = "jdbc:postgresql://localhost:5432/gumtree"
+    def urlString = "jdbc:postgresql://localhost:5432/scraper"
     def user = liquibaseProps.getProperty('username')
     def password = liquibaseProps.getProperty('password')
 

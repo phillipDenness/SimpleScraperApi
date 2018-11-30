@@ -1,4 +1,4 @@
-package com.phillip.denness.gumtree.domain;
+package com.phillip.denness.scraper.domain;
 
 public enum Tag {
     div,

@@ -19,7 +19,7 @@ apply plugin: 'io.spring.dependency-management'
 group = 'com.phillip.denness'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
-mainClassName = 'com.phillip.denness.gumtree.Application'
+mainClassName = 'com.phillip.denness.scraper.Application'
 
 repositories {
 	mavenCentral()
@@ -53,10 +53,13 @@ dependencies {
 }
 
 bootJar {
-	baseName 'gumtree'
+	baseName 'scraper'
 	archiveName = "$baseName"+".jar"
 	destinationDir = file("$rootDir/build/libs")
 	manifest {
 		attributes 'Implementation-Title': project.name, 'Implementation-Version': project.version
 	}
 }
+
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean

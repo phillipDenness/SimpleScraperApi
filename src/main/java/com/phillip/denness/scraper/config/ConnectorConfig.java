@@ -1,4 +1,4 @@
-package com.phillip.denness.gumtree.config;
+package com.phillip.denness.scraper.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,8 +1,8 @@
-package com.phillip.denness.gumtree.webcrawler;
+package com.phillip.denness.scraper.webcrawler;
 
-import com.phillip.denness.gumtree.domain.Scrape;
-import com.phillip.denness.gumtree.domain.Searchterms;
-import com.phillip.denness.gumtree.domain.Tag;
+import com.phillip.denness.scraper.domain.Scrape;
+import com.phillip.denness.scraper.domain.Searchterms;
+import com.phillip.denness.scraper.domain.Tag;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

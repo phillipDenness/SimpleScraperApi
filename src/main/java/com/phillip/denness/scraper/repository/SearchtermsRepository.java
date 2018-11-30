@@ -1,6 +1,6 @@
-package com.phillip.denness.gumtree.repository;
+package com.phillip.denness.scraper.repository;
 
-import com.phillip.denness.gumtree.domain.Searchterms;
+import com.phillip.denness.scraper.domain.Searchterms;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

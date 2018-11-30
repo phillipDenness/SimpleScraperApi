@@ -1,7 +1,7 @@
-package com.phillip.denness.gumtree.controller.response;
+package com.phillip.denness.scraper.controller.response;
 
-import com.phillip.denness.gumtree.domain.Scrape;
-import com.phillip.denness.gumtree.domain.Searchterms;
+import com.phillip.denness.scraper.domain.Scrape;
+import com.phillip.denness.scraper.domain.Searchterms;
 
 import java.util.Set;
 
