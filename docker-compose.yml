@@ -1,0 +1,27 @@
+version: '2.1'
+services:
+
+  scraper-api:
+    build:
+      context: .
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://scraper-db:5432/scraper
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - ROOT_APPENDER=JSON_CONSOLE
+    links:
+      - scraper-db
+    depends_on:
+      - scraper-db
+    ports:
+      - 8080:8080
+      - "7005:7005"
+
+  scraper-db:
+    image: postgres
+    restart: always
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_DB: scraper
