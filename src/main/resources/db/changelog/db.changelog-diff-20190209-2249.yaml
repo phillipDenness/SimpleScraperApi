@@ -1,13 +1,13 @@
 databaseChangeLog:
 - changeSet:
-    id: 1541347719803-1
-    author: gs65 (generated)
+    id: 1549752566767-1
+    author: Daniel (generated)
     changes:
     - createSequence:
         sequenceName: hibernate_sequence
 - changeSet:
-    id: 1541347719803-2
-    author: gs65 (generated)
+    id: 1549752566767-2
+    author: Daniel (generated)
     changes:
     - createTable:
         columns:
@@ -26,8 +26,8 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: searchterms
 - changeSet:
-    id: 1541347719803-3
-    author: gs65 (generated)
+    id: 1549752566767-3
+    author: Daniel (generated)
     changes:
     - createTable:
         columns:
@@ -41,8 +41,8 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: searchterms_blockwords
 - changeSet:
-    id: 1541347719803-4
-    author: gs65 (generated)
+    id: 1549752566767-4
+    author: Daniel (generated)
     changes:
     - createTable:
         columns:
@@ -56,8 +56,8 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: searchterms_keywords
 - changeSet:
-    id: 1541347719803-5
-    author: gs65 (generated)
+    id: 1549752566767-5
+    author: Daniel (generated)
     changes:
     - createTable:
         columns:
@@ -68,11 +68,11 @@ databaseChangeLog:
             type: INT
         - column:
             name: tag
-            type: VARCHAR(255)
+            type: VARCHAR(2048)
         tableName: searchterms_tags
 - changeSet:
-    id: 1541347719803-6
-    author: gs65 (generated)
+    id: 1549752566767-6
+    author: Daniel (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: searchterms_search_terms_id
@@ -83,8 +83,8 @@ databaseChangeLog:
         referencedColumnNames: search_terms_id
         referencedTableName: searchterms
 - changeSet:
-    id: 1541347719803-7
-    author: gs65 (generated)
+    id: 1549752566767-7
+    author: Daniel (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: searchterms_search_terms_id
@@ -95,8 +95,8 @@ databaseChangeLog:
         referencedColumnNames: search_terms_id
         referencedTableName: searchterms
 - changeSet:
-    id: 1541347719803-8
-    author: gs65 (generated)
+    id: 1549752566767-8
+    author: Daniel (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: searchterms_search_terms_id

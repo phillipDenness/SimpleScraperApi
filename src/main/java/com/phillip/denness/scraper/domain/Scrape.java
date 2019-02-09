@@ -1,11 +1,14 @@
 package com.phillip.denness.scraper.domain;
 
+import lombok.Builder;
+
 import java.io.Serializable;
 
+@Builder
 public class Scrape implements Serializable {
 
     private String text;
-    private Tag tag;
+    private String tag;
 
     public String getText() {
         return text;
@@ -15,11 +18,11 @@ public class Scrape implements Serializable {
         this.text = text;
     }
 
-    public Tag getTag() {
+    public String getTag() {
         return tag;
     }
 
-    public void setTag(Tag tag) {
+    public void setTag(String tag) {
         this.tag = tag;
     }
 

@@ -1,6 +1,7 @@
 package com.phillip.denness.scraper.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,18 +15,21 @@ public class Searchterms implements Serializable {
     @Column(name = "search_terms_id")
     private Integer searchTermsId;
 
+    @NotNull
     @Column(name = "search_name")
     private String searchName;
 
+    @NotNull
     @Column(name = "domain")
     private String domain;
 
+    @NotNull
     @ElementCollection
     @CollectionTable(
             name="searchterms_tags",
             joinColumns=@JoinColumn(name = "searchterms_search_terms_id", referencedColumnName = "search_terms_id")
     )
-    @Column(name = "tag")
+    @Column(name = "tag", length = 2048)
     private Set<String> tags = new HashSet<>();
 
     @ElementCollection

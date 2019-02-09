@@ -34,7 +34,15 @@ public class BasicWebCrawler {
 
     private void getPageElements(String tag) {
         try {
-            Document document = Jsoup.connect(searchterms.getDomain()).get();
+            Document document = Jsoup.connect(searchterms.getDomain())
+                    .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
+                    .referrer("http://www.google.com")
+                    .timeout(12000)
+                    .followRedirects(true)
+                    .get();
+            System.out.println(document);
             Elements elements = document.select(tag);
 
             elements.forEach( element -> {
@@ -55,9 +63,6 @@ public class BasicWebCrawler {
     }
 
     private void addScrape(Element element) {
-        Scrape scrape = new Scrape();
-        scrape.setTag(Tag.href);
-        scrape.setText(element.text());
-        scrapes.add(scrape);
+        scrapes.add(Scrape.builder().tag(Tag.href.toString()).text(element.text()).build());
     }
 }
