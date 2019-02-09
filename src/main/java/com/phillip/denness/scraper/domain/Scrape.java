@@ -1,30 +1,18 @@
 package com.phillip.denness.scraper.domain;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 @Builder
+@Getter
+@Setter
 public class Scrape implements Serializable {
 
     private String text;
     private String tag;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
 
     @Override
     public String toString() {
