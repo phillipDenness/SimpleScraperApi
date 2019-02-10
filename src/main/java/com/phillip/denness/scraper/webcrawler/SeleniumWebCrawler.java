@@ -2,11 +2,15 @@ package com.phillip.denness.scraper.webcrawler;
 
 import com.phillip.denness.scraper.domain.Scrape;
 import com.phillip.denness.scraper.domain.Searchterms;
+import com.phillip.denness.scraper.domain.Tag;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +24,7 @@ public class SeleniumWebCrawler
     private String chromeDriverPath;
 
     private WebDriver driver;
-    final ChromeOptions chromeOptions = new ChromeOptions();
+    private final ChromeOptions chromeOptions = new ChromeOptions();
 
     public SeleniumWebCrawler() {
         chromeOptions.setHeadless(true);
@@ -32,30 +36,36 @@ public class SeleniumWebCrawler
         }
     }
 
-    public Set<Scrape> doScrape(Searchterms searchterms) {
+    public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException{
 
         checkWebDriver();
 
         driver = new ChromeDriver(chromeOptions);
-
         Set<Scrape> scrapes;
-        waitForPageLoaded();
-        driver.get(searchterms.getDomain());
-        scrapes = searchterms.getTags().stream()
-                .map(String::toString)
-                .map(s -> getWebElement(s))
-                .collect(Collectors.toSet());
 
-        driver.close();
-        driver.quit();
-        return scrapes;
+        try {
+            driver.get(searchterms.getDomain());
+            scrapes = searchterms.getTags().stream()
+                    .map(String::toString)
+                    .map(s -> getWebElement(s))
+                    .collect(Collectors.toSet());
+
+            driver.close();
+            driver.quit();
+
+            return scrapes;
+        } catch (Throwable e) {
+            driver.close();
+            driver.quit();
+            throw new NotFoundException(e);
+        }
     }
 
     private Scrape getWebElement(String selector) {
         try {
-            WebElement webElement = driver.findElement(By.cssSelector(selector));
+            WebElement webElement = waitForPageLoaded(selector);
             return Scrape.builder().tag(selector)
-                    .href(webElement.getAttribute("href"))
+                    .href(webElement.getAttribute(Tag.href.toString()))
                     .text(webElement.getText().trim())
                     .build();
         } catch (Throwable e) {
@@ -63,11 +73,9 @@ public class SeleniumWebCrawler
         }
     }
 
-    public void waitForPageLoaded() {
-        try {
-            Thread.sleep(5000);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+    private WebElement waitForPageLoaded(String selector) {
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+        By addItem = By.cssSelector(selector);
+        return wait.until(ExpectedConditions.presenceOfElementLocated(addItem));
     }
 }

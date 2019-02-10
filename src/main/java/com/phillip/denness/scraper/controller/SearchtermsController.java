@@ -5,6 +5,7 @@ import com.phillip.denness.scraper.domain.Searchterms;
 import com.phillip.denness.scraper.webcrawler.SeleniumWebCrawler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,11 @@ public class SearchtermsController {
     private SeleniumWebCrawler seleniumWebCrawler;
 
     @PostMapping(value = "")
-    public SearchTermsResponse postSearchTerms(@Valid @RequestBody Searchterms searchterms) {
-        return new SearchTermsResponse(searchterms, seleniumWebCrawler.doScrape(searchterms));
+    public ResponseEntity postSearchTerms(@Valid @RequestBody Searchterms searchterms) {
+        return ResponseEntity.status(HttpStatus.OK).body(SearchTermsResponse.builder()
+                .searchterms(searchterms)
+                .scrapes(seleniumWebCrawler.doScrape(searchterms))
+                .build());
     }
 
     @ExceptionHandler
