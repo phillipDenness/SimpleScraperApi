@@ -15,6 +15,9 @@ public class FundResponse implements Serializable {
     @JsonProperty("fund")
     private String fund;
 
+    @JsonProperty("date")
+    private String date;
+
     @JsonProperty("price")
     private String price;
 
@@ -23,16 +26,28 @@ public class FundResponse implements Serializable {
 
     public FundResponse(Set<Scrape> scrapes, String fund) {
         this.fund = fund;
-        this.price = scrapes.stream()
+        mapFromScrapes(scrapes);
+    }
+
+    private void mapFromScrapes(Set<Scrape> scrapes) {
+        extractDateFromText(scrapes.stream()
                 .filter(scrape -> scrape.getTag().equals(FundController.PRICE_SELECTOR))
                 .map(Scrape::getText)
                 .filter(Objects::nonNull)
-                .findFirst().orElse("Not found price");
+                .findFirst()
+                .orElse(null));
 
         this.difference = scrapes.stream()
                 .filter(scrape -> scrape.getTag().equals(FundController.DIFF_SELECTOR))
                 .map(Scrape::getText)
                 .filter(Objects::nonNull)
                 .findFirst().orElse("Not found difference");
+    }
+
+    private void extractDateFromText(String text) {
+        if (text != null) {
+            this.price = text.split("p")[0];
+            this.date = text.split("p")[1].replace("(", "").replace(")", "");
+        }
     }
 }
