@@ -1,16 +1,19 @@
 package com.phillip.denness.scraper.domain;
 
+import lombok.Builder;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@Builder
 public class Searchterms implements Serializable {
 
     private String searchName;
     private String domain;
-    private Set<String> tags = new HashSet<>();
-    protected Set<String> keywords = new HashSet();
-    protected Set<String> blockwords = new HashSet();
+    private Set<String> tags;
+    protected Set<String> keywords;
+    protected Set<String> blockwords;
 
     public String getDomain() {
         return domain;
