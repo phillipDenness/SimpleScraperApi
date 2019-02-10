@@ -11,13 +11,24 @@ import java.util.Set;
 @Getter
 public class FundResponse implements Serializable {
 
+    @JsonProperty("fund")
+    private String fund;
+
     @JsonProperty("price")
     private String price;
 
-    public FundResponse(Set<Scrape> scrapes) {
+    @JsonProperty("difference")
+    private String difference;
+
+    public FundResponse(Set<Scrape> scrapes, String fund) {
+        this.fund = fund;
         this.price = scrapes.stream()
                 .filter(scrape -> scrape.getTag().equals(FundController.PRICE_SELECTOR))
                 .map(Scrape::getText)
                 .findFirst().orElse("Not found price");
+        this.difference = scrapes.stream()
+                .filter(scrape -> scrape.getTag().equals(FundController.DIFF_SELECTOR))
+                .map(Scrape::getText)
+                .findFirst().orElse("Not found difference");
     }
 }

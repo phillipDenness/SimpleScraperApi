@@ -11,14 +11,7 @@ import java.io.Serializable;
 @Setter
 public class Scrape implements Serializable {
 
+    private String href;
     private String text;
     private String tag;
-
-    @Override
-    public String toString() {
-        return "Scrape{" +
-                ", text='" + text + '\'' +
-                ", tag=" + tag +
-                '}';
-    }
 }

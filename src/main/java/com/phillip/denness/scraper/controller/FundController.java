@@ -1,16 +1,16 @@
 package com.phillip.denness.scraper.controller;
 
 import com.phillip.denness.scraper.controller.response.FundResponse;
-import com.phillip.denness.scraper.controller.response.SearchTermsResponse;
 import com.phillip.denness.scraper.domain.Searchterms;
 import com.phillip.denness.scraper.webcrawler.SeleniumWebCrawler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,19 +26,30 @@ public class FundController {
 
     @RequestMapping(value={"trustnet"}, method= RequestMethod.GET)
     public ResponseEntity getFundPrice(@RequestParam("fund") String fund) {
-        System.out.println("in controller");
+
+        String fundLink = "#pageContent > div > fund-search > div.content-wrapper.fund-results.search-results-content > div.grid > table > tbody > tr > td.fundName > a";
+        tags.add(fundLink);
+
+        String link = seleniumWebCrawler.doScrape(Searchterms.builder()
+                .domain("https://www.trustnet.com/fund/search/" + fund)
+                .tags(tags).build()).stream()
+                .findFirst().orElseGet(null)
+                .getHref();
+
+        System.out.println(link);
+
+        if (link == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not found fund " + fund);
+        }
+
         tags = new HashSet<>();
         tags.add(PRICE_SELECTOR);
         tags.add(DIFF_SELECTOR);
 
-        try {
-            Searchterms searchterms = Searchterms.builder()
-                    .domain(URLDecoder.decode(fund, "UTF-8"))
-                    .tags(tags).build();
-            return ResponseEntity.status(HttpStatus.OK).body(new FundResponse(seleniumWebCrawler.doScrape(searchterms)));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-        }
+        Searchterms searchterms = Searchterms.builder()
+                .domain(link)
+                .tags(tags).build();
+        return ResponseEntity.status(HttpStatus.OK).body(new FundResponse(seleniumWebCrawler.doScrape(searchterms), fund));
+
     }
 }

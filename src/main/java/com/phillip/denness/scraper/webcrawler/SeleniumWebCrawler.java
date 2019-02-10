@@ -3,12 +3,10 @@ package com.phillip.denness.scraper.webcrawler;
 import com.phillip.denness.scraper.domain.Scrape;
 import com.phillip.denness.scraper.domain.Searchterms;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -45,23 +43,27 @@ public class SeleniumWebCrawler
         driver.get(searchterms.getDomain());
         scrapes = searchterms.getTags().stream()
                 .map(String::toString)
-                .map(s -> getSelectorText(s))
+                .map(s -> getWebElementt(s))
                 .collect(Collectors.toSet());
 
         driver.close();
         return scrapes;
     }
 
-    private Scrape getSelectorText(String selector) {
-        String midprice = driver.findElement(By.cssSelector(selector)).getText();
-        return Scrape.builder().tag(selector).text(midprice).build();
+    private Scrape getWebElementt(String selector) {
+        WebElement webElement = driver.findElement(By.cssSelector(selector));
+
+        return Scrape.builder().tag(selector)
+                .href(webElement.getAttribute("href"))
+                .text(webElement.getText())
+                .build();
     }
 
     public void waitForPageLoaded() {
-        ExpectedCondition<Boolean> expectation = driver -> ((JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete");
+//        ExpectedCondition<Boolean> expectation = driver -> ((JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete");
         try {
-            WebDriverWait wait = new WebDriverWait(driver, 30);
-            wait.until(expectation);
+            Thread.sleep(4000);
+//            WebDriverWait wait = new WebDriverWait(driver, 30);
         } catch (Throwable e) {
             e.printStackTrace();
         }
