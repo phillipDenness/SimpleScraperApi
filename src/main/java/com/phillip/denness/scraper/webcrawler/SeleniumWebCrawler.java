@@ -28,7 +28,6 @@ public class SeleniumWebCrawler
 
     private void checkWebDriver() {
         if (System.getProperty("webdriver.chrome.driver") == null) {
-            System.out.println(chromeDriverPath);
             System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         }
     }
@@ -36,34 +35,37 @@ public class SeleniumWebCrawler
     public Set<Scrape> doScrape(Searchterms searchterms) {
 
         checkWebDriver();
-        Set<Scrape> scrapes;
 
         driver = new ChromeDriver(chromeOptions);
+
+        Set<Scrape> scrapes;
         waitForPageLoaded();
         driver.get(searchterms.getDomain());
         scrapes = searchterms.getTags().stream()
                 .map(String::toString)
-                .map(s -> getWebElementt(s))
+                .map(s -> getWebElement(s))
                 .collect(Collectors.toSet());
 
         driver.close();
+        driver.quit();
         return scrapes;
     }
 
-    private Scrape getWebElementt(String selector) {
-        WebElement webElement = driver.findElement(By.cssSelector(selector));
-
-        return Scrape.builder().tag(selector)
-                .href(webElement.getAttribute("href"))
-                .text(webElement.getText())
-                .build();
+    private Scrape getWebElement(String selector) {
+        try {
+            WebElement webElement = driver.findElement(By.cssSelector(selector));
+            return Scrape.builder().tag(selector)
+                    .href(webElement.getAttribute("href"))
+                    .text(webElement.getText().trim())
+                    .build();
+        } catch (Throwable e) {
+            return Scrape.builder().tag(selector).text(null).href(null).build();
+        }
     }
 
     public void waitForPageLoaded() {
-//        ExpectedCondition<Boolean> expectation = driver -> ((JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete");
         try {
-            Thread.sleep(4000);
-//            WebDriverWait wait = new WebDriverWait(driver, 30);
+            Thread.sleep(5000);
         } catch (Throwable e) {
             e.printStackTrace();
         }

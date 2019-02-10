@@ -6,6 +6,7 @@ import com.phillip.denness.scraper.domain.Scrape;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -25,10 +26,13 @@ public class FundResponse implements Serializable {
         this.price = scrapes.stream()
                 .filter(scrape -> scrape.getTag().equals(FundController.PRICE_SELECTOR))
                 .map(Scrape::getText)
+                .filter(Objects::nonNull)
                 .findFirst().orElse("Not found price");
+
         this.difference = scrapes.stream()
                 .filter(scrape -> scrape.getTag().equals(FundController.DIFF_SELECTOR))
                 .map(Scrape::getText)
+                .filter(Objects::nonNull)
                 .findFirst().orElse("Not found difference");
     }
 }

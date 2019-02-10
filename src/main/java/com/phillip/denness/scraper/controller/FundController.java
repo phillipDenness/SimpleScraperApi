@@ -18,6 +18,7 @@ import java.util.Set;
 public class FundController {
     final static public String PRICE_SELECTOR = "#factsheet-tabs > fund-tabs > div > div > fund-tab.overview > div > overview > div > div.content-wrapper > div.row-separator.fund_performance.clearfix > div:nth-child(3) > div > div.columns.column-border.column-6.column-left > unit-info > div > table > tbody > tr:nth-child(1) > td:nth-child(2)";
     final static public String DIFF_SELECTOR = "#factsheet-tabs > fund-tabs > div > div > fund-tab.overview > div > overview > div > div.content-wrapper > div.row-separator.fund_performance.clearfix > div:nth-child(3) > div > div.columns.column-border.column-6.column-left > unit-info > div > table > tbody > tr:nth-child(2) > td:nth-child(2)";
+    final static public String FUND_SEARCH_HREF = "#pageContent > div > fund-search > div.content-wrapper.fund-results.search-results-content > div.grid > table > tbody > tr > td.fundName > a";
 
     @Autowired
     private SeleniumWebCrawler seleniumWebCrawler;
@@ -27,8 +28,7 @@ public class FundController {
     @RequestMapping(value={"trustnet"}, method= RequestMethod.GET)
     public ResponseEntity getFundPrice(@RequestParam("fund") String fund) {
 
-        String fundLink = "#pageContent > div > fund-search > div.content-wrapper.fund-results.search-results-content > div.grid > table > tbody > tr > td.fundName > a";
-        tags.add(fundLink);
+        tags.add(FUND_SEARCH_HREF);
 
         String link = seleniumWebCrawler.doScrape(Searchterms.builder()
                 .domain("https://www.trustnet.com/fund/search/" + fund)
@@ -36,10 +36,8 @@ public class FundController {
                 .findFirst().orElseGet(null)
                 .getHref();
 
-        System.out.println(link);
-
         if (link == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not found fund " + fund);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fund not found - " + "https://www.trustnet.com/fund/search/" + fund);
         }
 
         tags = new HashSet<>();
@@ -50,6 +48,5 @@ public class FundController {
                 .domain(link)
                 .tags(tags).build();
         return ResponseEntity.status(HttpStatus.OK).body(new FundResponse(seleniumWebCrawler.doScrape(searchterms), fund));
-
     }
 }
