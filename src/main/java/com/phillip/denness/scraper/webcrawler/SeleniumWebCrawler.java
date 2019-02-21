@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class SeleniumWebCrawler
 {
-    @Value("${WEBDRIVER_PATH}")
+    @Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}")
     private String chromeDriverPath;
 
     private WebDriver driver;
