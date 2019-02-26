@@ -45,9 +45,12 @@ public class FundResponse implements Serializable {
     }
 
     private void extractDateFromText(String text) {
+        System.out.println(text);
         if (text != null) {
-            this.price = text.split("p")[0];
-            this.date = text.split("p")[1].replace("(", "").replace(")", "");
+            String[] texts = text.split("p");
+            this.price = texts[0];
+            int dateIndex = texts.length - 1;
+            this.date = text.split("p")[dateIndex].replace("(", "").replace(")", "");
         }
     }
 }
