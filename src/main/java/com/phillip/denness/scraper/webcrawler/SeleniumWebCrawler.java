@@ -9,6 +9,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,13 +22,17 @@ import java.util.stream.Collectors;
 @Service
 public class SeleniumWebCrawler
 {
-    private WebDriver driver;
+    private final Logger LOGGER = LoggerFactory.getLogger(SeleniumWebCrawler.class);
 
-    private Integer sessions;
+    private WebDriver driver;
     private ChromeOptions chromeOptions;
+    private Integer timeout;
 
     @Autowired
-    public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath) {
+    public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
+                              @Value("${WEBDRIVER_TIMEOUT:20000}") Integer timeout) {
+        this.timeout = timeout;
+
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
@@ -39,13 +45,12 @@ public class SeleniumWebCrawler
         chromeOptions.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
 
         driver = new ChromeDriver(chromeOptions);
-        sessions = 0;
+
+        LOGGER.info("Selenium started, Webdriver path: {}, thread instance timeout: {}", chromeDriverPath, timeout);
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
         Set<Scrape> scrapes = new HashSet<>();
-
-//        manageSessions();
 
         Thread t = new Thread(new Runnable() {
             public void run()
@@ -55,10 +60,10 @@ public class SeleniumWebCrawler
         }, searchterms.getDomain());
         t.start();
         try {
-            t.join(20000);
+            t.join(timeout);
         } catch (InterruptedException e) {}
         if (t.isAlive()) { // Thread still alive, we need to abort
-            System.out.println("Timeout on loading page " + searchterms.getDomain());
+            LOGGER.warn("Timeout on loading page {} ", searchterms.getDomain());
             t.interrupt();
             return scrapes;
         }
@@ -79,6 +84,7 @@ public class SeleniumWebCrawler
                     .text(webElement.getText().trim())
                     .build();
         } catch (Throwable e) {
+            LOGGER.warn("Could not find selector {} ", selector);
             return Scrape.builder().tag(selector).text(null).href(null).build();
         }
     }
@@ -86,14 +92,5 @@ public class SeleniumWebCrawler
     private WebElement waitForPageLoaded(String selector) {
         By addItem = By.cssSelector(selector);
         return driver.findElement(addItem);
-    }
-
-    private void manageSessions() {
-        sessions += sessions;
-        if (sessions > 5 ) {
-            driver.quit();
-            driver = new ChromeDriver(chromeOptions);
-            sessions = 0;
-        }
     }
 }

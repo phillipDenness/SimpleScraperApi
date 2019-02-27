@@ -3,7 +3,6 @@ package com.phillip.denness.scraper.domain;
 import lombok.Builder;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 @Builder

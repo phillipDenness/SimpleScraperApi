@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phillip.denness.scraper.controller.FundController;
 import com.phillip.denness.scraper.domain.Scrape;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
 @Getter
+@ToString
 public class FundResponse implements Serializable {
 
     @JsonProperty("fund")
@@ -45,7 +47,6 @@ public class FundResponse implements Serializable {
     }
 
     private void extractDateFromText(String text) {
-        System.out.println(text);
         if (text != null) {
             String[] texts = text.split("p");
             this.price = texts[0];
