@@ -22,16 +22,30 @@ public class SeleniumWebCrawler
 {
     private WebDriver driver;
 
+    private Integer sessions;
+    private ChromeOptions chromeOptions;
+
     @Autowired
     public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath) {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless");
+        chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("start-maximized"); // https://stackoverflow.com/a/26283818/1689770
+        chromeOptions.addArguments("enable-automation"); // https://stackoverflow.com/a/43840128/1689770
+        chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running headless
+        chromeOptions.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
+        chromeOptions.addArguments("--disable-infobars"); //https://stackoverflow.com/a/43840128/1689770
+        chromeOptions.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/50725918/1689770
+        chromeOptions.addArguments("--disable-browser-side-navigation"); //https://stackoverflow.com/a/49123152/1689770
+        chromeOptions.addArguments("--disable-gpu"); //https://stackoverflow.com/questions/51959986/how-to-solve-selenium-chromedriver-timed-out-receiving-message-from-renderer-exc
+
         driver = new ChromeDriver(chromeOptions);
+        sessions = 0;
     }
 
-    public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException{
+    public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
         Set<Scrape> scrapes = new HashSet<>();
+
+//        manageSessions();
 
         Thread t = new Thread(new Runnable() {
             public void run()
@@ -72,5 +86,14 @@ public class SeleniumWebCrawler
     private WebElement waitForPageLoaded(String selector) {
         By addItem = By.cssSelector(selector);
         return driver.findElement(addItem);
+    }
+
+    private void manageSessions() {
+        sessions += sessions;
+        if (sessions > 5 ) {
+            driver.quit();
+            driver = new ChromeDriver(chromeOptions);
+            sessions = 0;
+        }
     }
 }
