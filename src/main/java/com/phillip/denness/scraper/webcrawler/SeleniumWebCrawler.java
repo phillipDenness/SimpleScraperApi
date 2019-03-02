@@ -48,12 +48,10 @@ public class SeleniumWebCrawler
 
         driver.get(searchterms.getDomain());
 
-        Set<Scrape> scrapes = searchterms.getTags().stream()
+        return searchterms.getTags().stream()
                 .map(String::toString)
                 .map(this::getWebElement)
                 .collect(Collectors.toSet());
-
-        return scrapes;
     }
 
     private Scrape getWebElement(String selector) {
