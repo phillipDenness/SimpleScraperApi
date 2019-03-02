@@ -25,6 +25,7 @@ public class SeleniumWebCrawler
 
     private WebDriver driver;
     private ChromeOptions chromeOptions;
+    private Integer repeat = 0;
 
     @Autowired
     public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
@@ -40,18 +41,18 @@ public class SeleniumWebCrawler
         chromeOptions.addArguments("--single-process"); //https://stackoverflow.com/a/50725918/1689770
 
         driver = new ChromeDriver(chromeOptions);
-
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
+        iterateRepeat();
+
         driver.get(searchterms.getDomain());
 
         Set<Scrape> scrapes = searchterms.getTags().stream()
                 .map(String::toString)
-                .map(s -> getWebElement(s))
+                .map(this::getWebElement)
                 .collect(Collectors.toSet());
 
-//        iterateRepeat();
         return scrapes;
     }
 
@@ -73,14 +74,19 @@ public class SeleniumWebCrawler
         return driver.findElement(addItem);
     }
 
-//    private void iterateRepeat() {
-//        repeat++;
-//        if (repeat > 3) {
-//            LOGGER.info("Resetting chrome after {} iterations", repeat);
-//            repeat = 0;
-//            driver.close();
-//            driver = new ChromeDriver(chromeOptions);
-//        }
-//    }
+    private void iterateRepeat() {
+        repeat++;
+        if (repeat > 3) {
+            LOGGER.info("Resetting chrome after {} iterations", repeat);
+            repeat = 0;
+            driver.close();
+            driver.quit();
+            driver = null;
+            driver = new ChromeDriver(chromeOptions);
+        }
+        if (driver == null) {
+            iterateRepeat();
+        }
+    }
 
 }
