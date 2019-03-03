@@ -5,4 +5,6 @@ unzip headless-chromium.zip
 sudo mv headless-chromium ${CHROME_BINARY}
 wget https://chromedriver.storage.googleapis.com/2.37/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
-sudo mv chromedriver ${WEBDRIVER_PATH}
+sudo mv chromedriver ${CHROME_DRIVER_PATH}
+
+

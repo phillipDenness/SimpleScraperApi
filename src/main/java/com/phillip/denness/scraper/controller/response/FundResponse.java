@@ -1,8 +1,8 @@
 package com.phillip.denness.scraper.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phillip.denness.scraper.controller.FundController;
 import com.phillip.denness.scraper.domain.Scrape;
+import com.phillip.denness.scraper.service.ScrapeService;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -33,14 +33,14 @@ public class FundResponse implements Serializable {
 
     private void mapFromScrapes(Set<Scrape> scrapes) {
         extractDateFromText(scrapes.stream()
-                .filter(scrape -> scrape.getTag().equals(FundController.PRICE_SELECTOR))
+                .filter(scrape -> scrape.getTag().equals(ScrapeService.PRICE_SELECTOR))
                 .map(Scrape::getText)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null));
 
         this.difference = scrapes.stream()
-                .filter(scrape -> scrape.getTag().equals(FundController.DIFF_SELECTOR))
+                .filter(scrape -> scrape.getTag().equals(ScrapeService.DIFF_SELECTOR))
                 .map(Scrape::getText)
                 .filter(Objects::nonNull)
                 .findFirst().orElse("Not found difference");

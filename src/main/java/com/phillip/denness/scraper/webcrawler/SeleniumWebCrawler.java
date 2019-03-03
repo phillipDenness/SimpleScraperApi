@@ -1,5 +1,6 @@
 package com.phillip.denness.scraper.webcrawler;
 
+import com.phillip.denness.scraper.config.SeleniumProperties;
 import com.phillip.denness.scraper.domain.Scrape;
 import com.phillip.denness.scraper.domain.Searchterms;
 import com.phillip.denness.scraper.domain.Tag;
@@ -7,40 +8,29 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
-public class SeleniumWebCrawler
-{
+public class SeleniumWebCrawler {
+
     private final Logger LOGGER = LoggerFactory.getLogger(SeleniumWebCrawler.class);
 
     private WebDriver driver;
-    private ChromeOptions chromeOptions;
     private Integer repeat = 0;
+    private Integer iterationsBeforeRestart;
+    private IBrowser browser;
 
-    @Autowired
-    public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
-                              @Value("${CHROME_BINARY:/usr/bin/headless-chromium}") String chromeBinary) {
+    public SeleniumWebCrawler(SeleniumProperties seleniumProperties, IBrowser browser) {
+        this.browser = browser;
+        iterationsBeforeRestart = seleniumProperties.getIterationsBeforeRestart();
+        newBrowser();
+    }
 
-        LOGGER.info("Starting Selenium, Webdriver path: {}, Chrome binary: {} ", chromeDriverPath, chromeBinary);
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
-        chromeOptions = new ChromeOptions();
-        chromeOptions.setBinary(chromeBinary);
-        chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running headless
-        chromeOptions.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
-        chromeOptions.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/43840128/1689770
-        chromeOptions.addArguments("--single-process"); //https://stackoverflow.com/a/50725918/1689770
-
-        driver = new ChromeDriver(chromeOptions);
+    public void newBrowser() {
+        driver = browser.getDriver();
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
@@ -74,16 +64,14 @@ public class SeleniumWebCrawler
 
     private void iterateRepeat() {
         repeat++;
-        if (repeat > 3) {
+        if (repeat > iterationsBeforeRestart) {
             LOGGER.info("Resetting chrome after {} iterations", repeat);
             repeat = 0;
-            driver.close();
-            driver.quit();
-            driver = null;
-            driver = new ChromeDriver(chromeOptions);
-        }
-        if (driver == null) {
-            iterateRepeat();
+
+//            driver.close();
+//            driver.quit();
+//            driver = null;
+            newBrowser();
         }
     }
 
