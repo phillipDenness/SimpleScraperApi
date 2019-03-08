@@ -26,9 +26,9 @@ public class Firefox implements IBrowser {
 
         if (!Utils.isWindows()) {
             LOGGER.info("Linux machine, set binary and make headless");
-            options.setBinary(seleniumProperties.getFirefoxBinary());
-            options.addArguments("--headless"); // only if you are ACTUALLY running headless
         }
+        options.setBinary(seleniumProperties.getFirefoxBinary());
+        options.setHeadless(true); // only if you are ACTUALLY running headless
         options.addArguments("--single-process"); //https://stackoverflow.com/a/50725918/1689770
         options.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
         options.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/43840128/1689770

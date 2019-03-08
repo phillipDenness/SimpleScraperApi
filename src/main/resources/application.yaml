@@ -7,9 +7,9 @@ server:
 app:
   selenium:
     geckodriverPath: ${GECKODRIVER_PATH:C:\\bin\\geckodriver.exe}
+    firefoxBinary: ${FIREFOX_BINARY:""}
     chromeDriverPath: ${CHROME_DRIVER_PATH:C:\\bin\\chromedriver.exe}
     chromeBinary: ${CHROME_BINARY:""}
-    firefoxBinary: ${FIREFOX_BINARY:""}
     iterationsBeforeRestart: ${ITERATIONS_BROWSER:3}
   controller:
     timeout: ${CONTOLLER_TIMEOUT:10}
