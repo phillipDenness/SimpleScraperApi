@@ -9,12 +9,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,22 +33,24 @@ public class SeleniumWebCrawler
 
     @Autowired
     public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
-                              @Value("${CHROME_BINARY:/usr/bin/headless-chromium}") String chromeBinary) {
+                              @Value("${CHROME_BINARY:/usr/bin/headless-chromium}") String chromeBinary) throws MalformedURLException {
 
         LOGGER.info("Starting Selenium, Webdriver path: {}, Chrome binary: {} ", chromeDriverPath, chromeBinary);
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
-        chromeOptions = new ChromeOptions();
-        chromeOptions.setBinary(chromeBinary);
-        chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running headless
-        chromeOptions.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
-        chromeOptions.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/43840128/1689770
-        chromeOptions.addArguments("--single-process"); //https://stackoverflow.com/a/50725918/1689770
+        DesiredCapabilities dcap = DesiredCapabilities.chrome();
+////        chromeOptions.setBinary(chromeBinary);
+//        chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running headless
+//        chromeOptions.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
+//        chromeOptions.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/43840128/1689770
+//        chromeOptions.addArguments("--single-process"); //https://stackoverflow.com/a/50725918/1689770
 
-        driver = new ChromeDriver(chromeOptions);
+        URL gamelan = new URL("http://localhost:4444/wd/hub");
+        driver = new RemoteWebDriver(gamelan, dcap);
+//        driver = new ChromeDriver(chromeOptions);
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
-        iterateRepeat();
+//        iterateRepeat();
 
         driver.get(searchterms.getDomain());
 
@@ -57,6 +63,7 @@ public class SeleniumWebCrawler
     private Scrape getWebElement(String selector) {
         try {
             WebElement webElement = waitForPageLoaded(selector);
+            LOGGER.info(webElement.getText());
             return Scrape.builder().tag(selector)
                     .href(webElement.getAttribute(Tag.href.toString()))
                     .text(webElement.getText().trim())
