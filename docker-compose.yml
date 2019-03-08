@@ -1,27 +1,24 @@
-version: '2.1'
+version: '3'
 services:
+  chrome-container:
+    container_name: chrome-container
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+    volumes:
+      - /dev/shm:/dev/shm
+    expose:
+      - 4444
 
-  scraper-api:
-    build:
-      context: .
+  simplescraperapi:
+    build: .
+    ports:
+      - "5000:5000"
     environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://scraper-db:5432/scraper
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - ROOT_APPENDER=JSON_CONSOLE
+      - CHROME_DRIVER_PATH="/usr/local/bin/chromedriver"
+      - SELENIUM_URL=chrome-container
+      - SELENIUM_PORT=4444
     links:
-      - scraper-db
+      - chrome-container
     depends_on:
-      - scraper-db
-    ports:
-      - 8080:8080
-      - "7005:7005"
-
-  scraper-db:
-    image: postgres
-    restart: always
-    ports:
-    - "5432:5432"
-    environment:
-      POSTGRES_DB: scraper
+      - chrome-container

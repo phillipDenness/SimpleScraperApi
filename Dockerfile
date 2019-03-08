@@ -1,13 +1,12 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jdk-alpine
 
 MAINTAINER "http://personal-spa.herokuapp.com"
 
 WORKDIR /opt/app
 COPY build/libs/scraper.jar .
 
-ENV JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7005"
+ENTRYPOINT exec java -jar "/opt/app/scraper.jar"
 
-EXPOSE 8080 5005
-EXPOSE 7005 7005
-
-ENTRYPOINT exec java ${JAVA_OPTS} -jar "/opt/app/scraper.jar"
+RUN wget https://chromedriver.storage.googleapis.com/2.37/chromedriver_linux64.zip
+RUN unzip chromedriver_linux64.zip
+RUN mv chromedriver /usr/local/bin/chromedriver

@@ -9,6 +9,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,42 +29,55 @@ public class SeleniumWebCrawler
 
     private WebDriver driver;
 
-    @Autowired
-    public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath) throws MalformedURLException {
+    private DesiredCapabilities dcap;
+    private URL remoteSelenium;
 
-        LOGGER.info("Starting Selenium, Webdriver path: {}", chromeDriverPath);
+    @Autowired
+    public SeleniumWebCrawler(@Value("${CHROME_DRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
+                              @Value("${SELENIUM_URL:localhost}") String seleniumUrl,
+                              @Value("${SELENIUM_PORT:4444}") String seleniumPort) throws MalformedURLException {
+
+        String remoteUrl = "http://" + seleniumUrl + ":" + seleniumPort + "/wd/hub";
+        LOGGER.info("Starting Selenium, Webdriver path: {}, remote selenium: {}", chromeDriverPath, remoteUrl);
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
-        DesiredCapabilities dcap = DesiredCapabilities.chrome();
-        URL gamelan = new URL("http://localhost:4444/wd/hub");
-        driver = new RemoteWebDriver(gamelan, dcap);
+        dcap = DesiredCapabilities.chrome();
+        remoteSelenium = new URL(remoteUrl);
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
-
+        driver = new RemoteWebDriver(remoteSelenium, dcap);
         driver.get(searchterms.getDomain());
 
-        return searchterms.getTags().stream()
+        Set<Scrape> scrapes = searchterms.getTags().stream()
                 .map(String::toString)
                 .map(this::getWebElement)
                 .collect(Collectors.toSet());
+
+
+        driver.close();
+
+        driver.quit();
+        return scrapes;
     }
 
     private Scrape getWebElement(String selector) {
         try {
             WebElement webElement = waitForPageLoaded(selector);
-            LOGGER.info(webElement.getText());
             return Scrape.builder().tag(selector)
                     .href(webElement.getAttribute(Tag.href.toString()))
                     .text(webElement.getText().trim())
                     .build();
         } catch (Throwable e) {
+            driver.close();
+
+            driver.quit();
             LOGGER.warn("Could not find selector {} ", selector);
             return Scrape.builder().tag(selector).text(null).href(null).build();
         }
     }
 
     private WebElement waitForPageLoaded(String selector) {
-        By addItem = By.cssSelector(selector);
-        return driver.findElement(addItem);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(selector)));
     }
 }
