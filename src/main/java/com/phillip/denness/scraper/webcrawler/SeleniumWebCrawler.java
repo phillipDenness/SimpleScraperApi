@@ -7,8 +7,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
@@ -28,29 +26,18 @@ public class SeleniumWebCrawler
     private final Logger LOGGER = LoggerFactory.getLogger(SeleniumWebCrawler.class);
 
     private WebDriver driver;
-    private ChromeOptions chromeOptions;
-    private Integer repeat = 0;
 
     @Autowired
-    public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
-                              @Value("${CHROME_BINARY:/usr/bin/headless-chromium}") String chromeBinary) throws MalformedURLException {
+    public SeleniumWebCrawler(@Value("${WEBDRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath) throws MalformedURLException {
 
-        LOGGER.info("Starting Selenium, Webdriver path: {}, Chrome binary: {} ", chromeDriverPath, chromeBinary);
+        LOGGER.info("Starting Selenium, Webdriver path: {}", chromeDriverPath);
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         DesiredCapabilities dcap = DesiredCapabilities.chrome();
-////        chromeOptions.setBinary(chromeBinary);
-//        chromeOptions.addArguments("--headless"); // only if you are ACTUALLY running headless
-//        chromeOptions.addArguments("--no-sandbox"); //https://stackoverflow.com/a/50725918/1689770
-//        chromeOptions.addArguments("--disable-dev-shm-usage"); //https://stackoverflow.com/a/43840128/1689770
-//        chromeOptions.addArguments("--single-process"); //https://stackoverflow.com/a/50725918/1689770
-
         URL gamelan = new URL("http://localhost:4444/wd/hub");
         driver = new RemoteWebDriver(gamelan, dcap);
-//        driver = new ChromeDriver(chromeOptions);
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
-//        iterateRepeat();
 
         driver.get(searchterms.getDomain());
 
@@ -78,20 +65,4 @@ public class SeleniumWebCrawler
         By addItem = By.cssSelector(selector);
         return driver.findElement(addItem);
     }
-
-    private void iterateRepeat() {
-        repeat++;
-        if (repeat > 3) {
-            LOGGER.info("Resetting chrome after {} iterations", repeat);
-            repeat = 0;
-            driver.close();
-            driver.quit();
-            driver = null;
-            driver = new ChromeDriver(chromeOptions);
-        }
-        if (driver == null) {
-            iterateRepeat();
-        }
-    }
-
 }
