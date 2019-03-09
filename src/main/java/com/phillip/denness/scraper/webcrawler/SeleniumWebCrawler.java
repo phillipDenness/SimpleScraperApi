@@ -53,10 +53,7 @@ public class SeleniumWebCrawler
                 .map(this::getWebElement)
                 .collect(Collectors.toSet());
 
-
-        driver.close();
-
-        driver.quit();
+        closeDriver();
         return scrapes;
     }
 
@@ -68,9 +65,7 @@ public class SeleniumWebCrawler
                     .text(webElement.getText().trim())
                     .build();
         } catch (Throwable e) {
-            driver.close();
-
-            driver.quit();
+            closeDriver();
             LOGGER.warn("Could not find selector {} ", selector);
             return Scrape.builder().tag(selector).text(null).href(null).build();
         }
@@ -80,4 +75,10 @@ public class SeleniumWebCrawler
         WebDriverWait wait = new WebDriverWait(driver, 10);
         return wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(selector)));
     }
+
+    private void closeDriver() {
+        driver.close();
+        driver.quit();
+    }
+
 }

@@ -5,13 +5,10 @@ services:
     image: selenium/standalone-chrome
     ports:
       - "4444:4444"
-    volumes:
-      - /dev/shm:/dev/shm
-    expose:
-      - 4444
 
   simplescraperapi:
-    build: .
+    # build: .
+    image: phillipdenness1/simplescraperapi
     ports:
       - "5000:5000"
     environment:
@@ -22,3 +19,4 @@ services:
       - chrome-container
     depends_on:
       - chrome-container
+
