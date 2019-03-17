@@ -3,3 +3,6 @@ spring:
     name: SimpleScraperApi
 server:
   port: ${PORT:5000}
+aviva:
+  pdenness: ${pdenness}
+

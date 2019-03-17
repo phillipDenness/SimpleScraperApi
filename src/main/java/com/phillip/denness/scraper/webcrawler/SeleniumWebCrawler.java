@@ -7,8 +7,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -19,16 +19,15 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class SeleniumWebCrawler
-{
+public class SeleniumWebCrawler {
     private final Logger LOGGER = LoggerFactory.getLogger(SeleniumWebCrawler.class);
 
     private WebDriver driver;
-
     private DesiredCapabilities dcap;
     private URL remoteSelenium;
 
@@ -41,11 +40,17 @@ public class SeleniumWebCrawler
         LOGGER.info("Starting Selenium, Webdriver path: {}, remote selenium: {}", chromeDriverPath, remoteUrl);
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         dcap = DesiredCapabilities.chrome();
-        remoteSelenium = new URL(remoteUrl);
+//        remoteSelenium = new URL(remoteUrl);
+    }
+
+    public List<Action> executeActions(Aviva aviva) {
+//        driver = new RemoteWebDriver(remoteSelenium, dcap);
+        driver = new ChromeDriver();
+        return aviva.execute(driver);
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
-        driver = new RemoteWebDriver(remoteSelenium, dcap);
+//        driver = new RemoteWebDriver(remoteSelenium, dcap);
         driver.get(searchterms.getDomain());
 
         Set<Scrape> scrapes = searchterms.getTags().stream()
@@ -59,7 +64,7 @@ public class SeleniumWebCrawler
 
     private Scrape getWebElement(String selector) {
         try {
-            WebElement webElement = waitForPageLoaded(selector);
+            WebElement webElement = safeGetWebElement(By.cssSelector(selector), driver);
             return Scrape.builder().tag(selector)
                     .href(webElement.getAttribute(Tag.href.toString()))
                     .text(webElement.getText().trim())
@@ -71,14 +76,18 @@ public class SeleniumWebCrawler
         }
     }
 
-    private WebElement waitForPageLoaded(String selector) {
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(selector)));
-    }
-
     private void closeDriver() {
         driver.close();
         driver.quit();
+    }
+
+    public static WebElement safeGetWebElement(By selector, WebDriver driver, Integer seconds) {
+        WebDriverWait wait = new WebDriverWait(driver, seconds);
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(selector));
+    }
+
+    public static WebElement safeGetWebElement(By selector, WebDriver driver) {
+        return safeGetWebElement(selector, driver, 10);
     }
 
 }
