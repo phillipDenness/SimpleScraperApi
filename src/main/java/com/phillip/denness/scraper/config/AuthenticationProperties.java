@@ -6,10 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties("aviva")
+@ConfigurationProperties("authentication")
 @Getter
 @Setter
-public class AvivaProps {
+public class AuthenticationProperties {
 
-    private String pdenness;
+    private long token_expiration;
+    private String signing_key;
 }

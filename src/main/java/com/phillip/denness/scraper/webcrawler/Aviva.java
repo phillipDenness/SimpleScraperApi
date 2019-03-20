@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Aviva {
 
@@ -18,16 +17,20 @@ public class Aviva {
 
     private WebDriver driver;
     private List<Action> actions;
-    private Map<String, String> config;
+    private String username;
+    private String password;
+    private String fund;
 
-    public Aviva(Map config) {
-        this.config = config;
+    public Aviva(String username, String password, String fund) {
+        this.username = username;
+        this.password = password;
+        this.fund = fund;
         this.actions = new ArrayList<>();
     }
 
     public List<Action> execute(WebDriver driver) {
-        if (config == null) {
-            addAction("setup","config is null");
+        if (username == null || password == null || fund == null) {
+            addAction("setup", "required parameter is null");
             return actions;
         }
 
@@ -65,8 +68,8 @@ public class Aviva {
         WebElement loginButton = SeleniumWebCrawler
                 .safeGetWebElement(By.cssSelector("#loginButton"), driver);
 
-        userID.sendKeys(config.get("username"));
-        passwd.sendKeys(config.get("password"));
+        userID.sendKeys(username);
+        passwd.sendKeys(password);
         loginButton.click();
 
         addAction("login");
