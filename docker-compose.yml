@@ -1,14 +1,18 @@
 version: '3'
 services:
   simplescraperapi:
-#    build: .
-    image: phillipdenness1/simplescraperapi
+    build: .
+#    image: phillipdenness1/simplescraperapi
     ports:
       - "5000:5000"
     environment:
       - CHROME_DRIVER_PATH="/usr/local/bin/chromedriver"
       - SELENIUM_URL=hub
       - SELENIUM_PORT=4444
+      - AVIVA_CREDS=username1,password1 username2,password2
+      - SIGNING_KEY=FvWoa2jmrLLruoUhpoUyGA==
+      - TIMEOUT_SECONDS=10
+      - EXPIRATION_TIME=1440
     links:
       - hub
     depends_on:

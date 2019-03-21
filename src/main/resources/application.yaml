@@ -5,6 +5,10 @@ server:
   port: ${PORT:5000}
 selenium:
   aviva_credentials: ${AVIVA_CREDS:username password,username2 password2}
+  timeout_seconds: ${TIMEOUT_SECONDS:10}
+  chrome_driver_path: ${CHROME_DRIVER_PATH:/usr/bin/chromedriver}
+  selenium_url: ${SELENIUM_URL:localhost}
+  selenium_port: ${SELENIUM_PORT:4444}
 authentication:
   token_expiration: ${EXPIRATION_TIME:1440}
   signing_key: ${SIGNING_KEY}

@@ -36,22 +36,16 @@ repositories {
 }
 
 dependencies {
-	compile group: 'info.cukes', name: 'cucumber-java', version: '1.2.5'
 	compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
 	compile 'org.projectlombok:lombok-maven-plugin:1.18.4.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.microsoft.azure:azure-active-directory-spring-boot-starter'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-	compile group: 'org.springframework.security', name: 'spring-security-oauth2-client'
 	compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile group: 'junit', name: 'junit', version: '4.12'
-	testCompile group: 'info.cukes', name: 'cucumber-junit', version: '1.2.5'
-	testCompile group: 'info.cukes', name: 'cucumber-core', version: '1.2.5'
-	testCompile group: 'info.cukes', name: 'cucumber-spring', version: '1.2.5'
 }
 
 dependencyManagement {

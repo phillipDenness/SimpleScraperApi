@@ -16,8 +16,12 @@ import java.util.Optional;
 @Setter
 public class SeleniumProperties {
 
+    private Integer timeout_seconds;
     private String aviva_credentials;
     private Map<String, String> credentialStore;
+    private String chrome_driver_path;
+    private String selenium_url;
+    private String selenium_port;
 
     @PostConstruct
     public void init() {

@@ -10,11 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@Validated
 public class AvivaController {
     private final Logger LOGGER = LoggerFactory.getLogger(AvivaController.class);
 
@@ -35,8 +39,9 @@ public class AvivaController {
     }
 
     @RequestMapping(value={"aviva"}, method=RequestMethod.GET)
-    public ResponseEntity<ActionsResponse> runAviva(@RequestParam("username") String username,
-                                                    @RequestParam("fund") String fund) {
+    public ResponseEntity<ActionsResponse> runAviva(@RequestParam("username") @NotBlank @Size(min = 3) String username,
+                                                    @RequestParam("email") @NotBlank @Size(min = 3) String email,
+                                                    @RequestParam("fund") @NotBlank @Size(min = 3) String fund) {
 
         Optional<String> password = seleniumProperties.getPassword(username);
         if (!password.isPresent()) {
@@ -46,7 +51,7 @@ public class AvivaController {
                     ).build());
         }
 
-        Aviva aviva = new Aviva(username, password.get(), fund);
+        Aviva aviva = new Aviva(username, password.get(), fund, email);
         List<Action> actions = seleniumWebCrawler.executeActions(aviva);
         return validateActions(actions);
     }
