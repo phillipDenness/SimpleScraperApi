@@ -1,5 +1,6 @@
 package com.phillip.denness.scraper.webcrawler;
 
+import com.phillip.denness.scraper.config.SeleniumProperties;
 import com.phillip.denness.scraper.domain.Scrape;
 import com.phillip.denness.scraper.domain.Searchterms;
 import com.phillip.denness.scraper.domain.Tag;
@@ -7,19 +8,17 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,27 +29,20 @@ public class SeleniumWebCrawler {
     private WebDriver driver;
     private DesiredCapabilities dcap;
     private URL remoteSelenium;
+    private static Integer timeout;
 
     @Autowired
-    public SeleniumWebCrawler(@Value("${CHROME_DRIVER_PATH:/usr/bin/chromedriver}") String chromeDriverPath,
-                              @Value("${SELENIUM_URL:localhost}") String seleniumUrl,
-                              @Value("${SELENIUM_PORT:4444}") String seleniumPort) throws MalformedURLException {
-
-        String remoteUrl = "http://" + seleniumUrl + ":" + seleniumPort + "/wd/hub";
-        LOGGER.info("Starting Selenium, Webdriver path: {}, remote selenium: {}", chromeDriverPath, remoteUrl);
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+    public SeleniumWebCrawler(SeleniumProperties seleniumProperties) throws MalformedURLException {
+        SeleniumWebCrawler.timeout = seleniumProperties.getTimeout_seconds();
+        String remoteUrl = "http://" + seleniumProperties.getSelenium_url() + ":" + seleniumProperties.getSelenium_port() + "/wd/hub";
+        LOGGER.info("Starting Selenium, Webdriver path: {}, remote selenium: {}", seleniumProperties.getChrome_driver_path(), remoteUrl);
+        System.setProperty("webdriver.chrome.driver", seleniumProperties.getChrome_driver_path());
         dcap = DesiredCapabilities.chrome();
-//        remoteSelenium = new URL(remoteUrl);
-    }
-
-    public List<Action> executeActions(Aviva aviva) {
-//        driver = new RemoteWebDriver(remoteSelenium, dcap);
-        driver = new ChromeDriver();
-        return aviva.execute(driver);
+        remoteSelenium = new URL(remoteUrl);
     }
 
     public Set<Scrape> doScrape(Searchterms searchterms) throws NotFoundException {
-//        driver = new RemoteWebDriver(remoteSelenium, dcap);
+        driver = new RemoteWebDriver(remoteSelenium, dcap);
         driver.get(searchterms.getDomain());
 
         Set<Scrape> scrapes = searchterms.getTags().stream()
@@ -87,7 +79,7 @@ public class SeleniumWebCrawler {
     }
 
     public static WebElement safeGetWebElement(By selector, WebDriver driver) {
-        return safeGetWebElement(selector, driver, 10);
+        return safeGetWebElement(selector, driver, SeleniumWebCrawler.timeout);
     }
 
 }
